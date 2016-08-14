@@ -20,10 +20,20 @@ class BaseCarSpider(CrawlSpider):
             string = string.replace(i, "")
         return string.strip()
 
+    def _extract_text_from_id(self, response, identifier):
+        l = response.xpath("//*[id='{0}']//./text()".format(fieldname)).extract()
+        return l[0].strip() if l else None
+
+    def _extract_text_from_itemprops(self, response, identifier):
+        l = response.xpath("//*[itemprops='{0}']//./text()".format(fieldname)).extract()
+        return l[0].strip() if l else None
+
 
 class KijijiCarSpider(BaseCarSpider):
     name = "kijiji_car_spider"
-    allowed_domains = ["kijiji.ca"]
+    allowed_domains = [
+        "kijiji.ca"
+    ]
     start_urls = [
         "http://www.kijiji.ca/b-cars-trucks/ottawa/c174l1700185",
         "http://www.kijiji.ca/b-cars-trucks/ottawa/suv+crossover/c174l1700185a138",
@@ -83,9 +93,53 @@ class KijijiCarSpider(BaseCarSpider):
         return r.group(1).strip() if r else None
 
 
+class TonyGrahamToyotaCarSpider(BaseCarSpider):
+    name = "tonygrahamtoyota_car_spider"
+    allowed_domains = [
+        "www.tonygrahamtoyota.com/"
+    ]
+    start_urls = [
+        "http://www.tonygrahamtoyota.com/all/keywords/",
+        "http://www.tonygrahamtoyota.com/all/s/year/o/desc/pg/1",
+        "http://www.tonygrahamtoyota.com/all/s/year/o/desc/pg/2",
+        "http://www.tonygrahamtoyota.com/all/s/year/o/desc/pg/3",
+        "http://www.tonygrahamtoyota.com/all/s/year/o/desc/pg/4",
+        "http://www.tonygrahamtoyota.com/all/s/year/o/desc/pg/5",
+    ]
+    rules = [
+        Rule(
+            LinkExtractor(
+                allow=[
+                    "http://www.tonygrahamtoyota.com/all/vehicle/.*"
+                ]
+            ),
+            callback="parse_item"
+        ),
+        Rule(
+            LinkExtractor(
+                allow=[
+                    "http://www.tonygrahamtoyota.com/all/s/year/o/desc/pg/\d"
+                ]
+            )
+        )
+    ]
+
+    def parse_item(self, response):
+        car = items.CarItem()
+        car["url"] = response.url
+        car["domain"] = self._extract_domain(response)
+        car["price"] = self._extract_text_from_id(response, "final-price")
+        car["year"] = self._extract_text_from_itemprops(response, "releaseDate")
+        car["make"] = self._extract_text_from_itemprops(response, "brand")
+        car["model"] = self._extract_text_from_itemprops(response, "model")
+        car["kilometers"] = self._extract_text_from_itemprops(response, "mileageFromOdometer").replace("km", "")
+
+
 class OttawaHondaCarSpider(BaseCarSpider):
     name = "ottawahonda_car_spider"
-    allowed_domains = ["ottawahonda.com"]
+    allowed_domains = [
+        "ottawahonda.com"
+    ]
     start_urls = [
         "https://www.ottawahonda.com/used/search.html"
     ]

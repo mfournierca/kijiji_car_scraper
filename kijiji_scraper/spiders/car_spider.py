@@ -18,7 +18,6 @@ class KijijiCarSpider(CrawlSpider):
         Rule(
             LinkExtractor(
                 allow=[
-                    "http://www.kijiji.ca/b-cars-trucks/ottawa/.+",
                     "http://www.kijiji.ca/v-cars-trucks/ottawa/.+"
                 ]
             ),

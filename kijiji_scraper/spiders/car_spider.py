@@ -1,12 +1,38 @@
 import scrapy
 import re
+import itertools
+from urlparse import urlparse
+
 from .. import items
 
 from scrapy.contrib.spiders import CrawlSpider, Rule
 from scrapy.contrib.linkextractors import LinkExtractor
 
 
-class KijijiCarSpider(CrawlSpider):
+class AllCarSpider(CrawlSpider):
+    name = "all_car_spider"
+    spiders = [
+        KijijiCarSpider(),
+        OttawaHondaCarSpider()
+    ]
+    allowed_domains = list(itertools.chain.from_iterable([s.allowed_domains for s in spiders]))
+    start_urls = list(itertools.chain.from_iterable([s.start_urls for s in spiders]))
+    rules = list(itertools.chain.from_iterable([s.rules for s in spiders]))
+
+
+class BaseCarSpider(CrawlSpider):
+    name = "base_car_spider"
+
+    def _extract_domain(self, response):
+        return urlparse(response.url).netloc
+
+    def _clean_string(self, string):
+        for i in [",", "\n", "\r", ";", "\\"]:
+            string = string.replace(i, "")
+        return string.strip()
+
+
+class KijijiCarSpider(BaseCarSpider):
     name = "kijiji_car_spider"
     allowed_domains = ["kijiji.ca"]
     start_urls = [
@@ -21,8 +47,10 @@ class KijijiCarSpider(CrawlSpider):
                     "http://www.kijiji.ca/v-cars-trucks/ottawa/.+"
                 ]
             ),
-            callback='parse_item'),
+            callback='parse_item'
+        ),
         Rule(
+
             LinkExtractor(
                 allow=["http://www.kijiji.ca/b-cars-trucks/ottawa/.*?/page-[0-9]/.+"]
             )
@@ -31,8 +59,8 @@ class KijijiCarSpider(CrawlSpider):
 
     def parse_item(self, response):
         car = items.CarItem()
-
         car["url"] = response.url
+        car["domain"] = self._extract_domain(response)
         car["price"] = self._extract_field(response, "Price")
         car["date_listed"] = self._extract_field(response, "Date Listed")
         car["title"] = self._extract_title(response)
@@ -41,13 +69,7 @@ class KijijiCarSpider(CrawlSpider):
         car["model"] = self._extract_link_field(response, "Model")
         car["year"] = self._extract_field(response, "Year")
         car["kilometers"] = self._extract_field(response, "Kilometers")
-
         return car
-
-    def _clean_string(self, string):
-        for i in [",", "\n", "\r", ";", "\\"]:
-            string = string.replace(i, "")
-        return string.strip()
 
     def _extract_title(self, response):
         l = " ".join(response.xpath("//h1/text()").extract())
@@ -70,4 +92,32 @@ class KijijiCarSpider(CrawlSpider):
     def _extract_bedrooms(self, response):
         r = re.search(r'kijiji.ca\/v-(\d)-bedroom-apartments-condos', response.url)
         return r.group(1).strip() if r else None
+
+
+class OttawaHondaCarSpider(BaseCarSpider):
+    name = "ottawahonad_car_spider"
+    allowed_domains = ["ottawahonda.com"]
+    start_urls = [
+        "https://www.ottawahonda.com/used/search.html"
+    ]
+    rules = [
+        Rule(
+            LinkExtractor(
+                allow=[
+                    "https://www.ottawahonda.com/used/.+"
+                ]
+            ),
+            callback='parse_ottawahonda_item'
+        ),
+        Rule(
+            LinkExtractor(
+                allow=["https://www.ottawahonda.com/used/search.html?spage=[0-9]"]
+            )
+        )
+    ]
+
+    def parse_ottawahonda_item(self, respons):
+        car = items.CarItem()
+        car["url"] = response.url
+        car["domain"] = self._extract_domain(response)
 

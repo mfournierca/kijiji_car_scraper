@@ -10,6 +10,7 @@ import scrapy
 
 class CarItem(scrapy.Item):
     url = scrapy.Field()
+    domain = scrapy.Field()
     make = scrapy.Field()
     model = scrapy.Field()
     price = scrapy.Field()

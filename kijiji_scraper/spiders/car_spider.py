@@ -9,11 +9,18 @@ from scrapy.contrib.linkextractors import LinkExtractor
 class KijijiCarSpider(CrawlSpider):
     name = "kijiji_car_spider"
     allowed_domains = ["kijiji.ca"]
-    start_urls = ["http://www.kijiji.ca/b-apartments-condos/ottawa/c37l1700185"]
+    start_urls = [
+        "http://www.kijiji.ca/b-cars-trucks/ottawa/c174l1700185",
+        "http://www.kijiji.ca/b-cars-trucks/ottawa/suv+crossover/c174l1700185a138",
+        "http://www.kijiji.ca/b-cars-trucks/ottawa/mini+van/c174l1700185a138"
+    ]
     rules = [
         Rule(
             LinkExtractor(
-                allow=["http://www.kijiji.ca/b-cars-trucks/ottawa/.+"]
+                allow=[
+                    "http://www.kijiji.ca/b-cars-trucks/ottawa/.+",
+                    "http://www.kijiji.ca/v-cars-trucks/ottawa/.+"
+                ]
             ),
             callback='parse_item'),
         Rule(
@@ -59,16 +66,4 @@ class KijijiCarSpider(CrawlSpider):
     def _extract_bedrooms(self, response):
         r = re.search(r'kijiji.ca\/v-(\d)-bedroom-apartments-condos', response.url)
         return r.group(1).strip() if r else None
-
-
-class KijijiCarSUVSpider(KijijiCarSpider):
-    name = "kijiji_car_suv_spider"
-    start_urls = ["http://www.kijiji.ca/b-cars-trucks/ottawa/suv+crossover/c174l1700185a138"]
-    name = "kijiji_car_suv_spider"
-
-
-class KijijiCarVanSpider(KijijiCarSpider):
-    name = "kijiji_car_van_spider"
-    start_urls = ["http://www.kijiji.ca/b-cars-trucks/ottawa/mini+van/c174l1700185a138"]
-    name = "kijiji_car_van_spider"
 

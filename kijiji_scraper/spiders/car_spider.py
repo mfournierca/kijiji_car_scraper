@@ -22,11 +22,11 @@ class BaseCarSpider(CrawlSpider):
 
     def _extract_text_from_id(self, response, identifier):
         l = response.xpath("//*[id='{0}']//./text()".format(fieldname)).extract()
-        return l[0].strip() if l else None
+        return self._clean_string(l[0]) if l else None
 
     def _extract_text_from_itemprops(self, response, identifier):
         l = response.xpath("//*[itemprops='{0}']//./text()".format(fieldname)).extract()
-        return l[0].strip() if l else None
+        return self._clean_string(l[0]) if l else None
 
 
 class KijijiCarSpider(BaseCarSpider):
@@ -133,6 +133,7 @@ class TonyGrahamToyotaCarSpider(BaseCarSpider):
         car["make"] = self._extract_text_from_itemprops(response, "brand")
         car["model"] = self._extract_text_from_itemprops(response, "model")
         car["kilometers"] = self._extract_text_from_itemprops(response, "mileageFromOdometer").replace("km", "")
+        return car
 
 
 class OttawaHondaCarSpider(BaseCarSpider):

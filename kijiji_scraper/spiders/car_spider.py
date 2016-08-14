@@ -9,17 +9,6 @@ from scrapy.contrib.spiders import CrawlSpider, Rule
 from scrapy.contrib.linkextractors import LinkExtractor
 
 
-class AllCarSpider(CrawlSpider):
-    name = "all_car_spider"
-    spiders = [
-        KijijiCarSpider(),
-        OttawaHondaCarSpider()
-    ]
-    allowed_domains = list(itertools.chain.from_iterable([s.allowed_domains for s in spiders]))
-    start_urls = list(itertools.chain.from_iterable([s.start_urls for s in spiders]))
-    rules = list(itertools.chain.from_iterable([s.rules for s in spiders]))
-
-
 class BaseCarSpider(CrawlSpider):
     name = "base_car_spider"
 
@@ -27,7 +16,7 @@ class BaseCarSpider(CrawlSpider):
         return urlparse(response.url).netloc
 
     def _clean_string(self, string):
-        for i in [",", "\n", "\r", ";", "\\"]:
+        for i in [",", "\n", "\r", ";", ":", "\\"]:
             string = string.replace(i, "")
         return string.strip()
 
@@ -95,7 +84,7 @@ class KijijiCarSpider(BaseCarSpider):
 
 
 class OttawaHondaCarSpider(BaseCarSpider):
-    name = "ottawahonad_car_spider"
+    name = "ottawahonda_car_spider"
     allowed_domains = ["ottawahonda.com"]
     start_urls = [
         "https://www.ottawahonda.com/used/search.html"
@@ -107,7 +96,7 @@ class OttawaHondaCarSpider(BaseCarSpider):
                     "https://www.ottawahonda.com/used/.+"
                 ]
             ),
-            callback='parse_ottawahonda_item'
+            callback='parse_item'
         ),
         Rule(
             LinkExtractor(
@@ -116,8 +105,25 @@ class OttawaHondaCarSpider(BaseCarSpider):
         )
     ]
 
-    def parse_ottawahonda_item(self, respons):
+    def parse_item(self, respons):
         car = items.CarItem()
         car["url"] = response.url
         car["domain"] = self._extract_domain(response)
+        car["model"] = self._extract_field(response, "Model")
+        car["title"] = self._extrat_title(response)
+        car["price"] = self._extract_field(response, "Price")
+        car["kilometers"] = self._extract_kilomters(response)
 
+    def _extract_kilomters(self, response):
+        l = response.xpath("//div[@id='carPrice']/span[2]/text()")
+        l = self._clean_string(l).replace("(", "").replace(")", "").replace("km", "") if l else None
+        return l
+
+    def _extract_title(self, response):
+        l = response.xpath("//h1[@id='carTitle']/text()")
+        return self._clean_string(l) if l else None
+
+    def _extract_field(self, response, fieldname):
+        l = response.xpath("//li/span[contains(text(), '{0}: ')]//text()")
+            .format(fieldname)).extract()
+        return self._clean_string(l).replace(fieldname, "") if l else None

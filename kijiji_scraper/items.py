@@ -8,7 +8,7 @@
 import scrapy
 
 
-class AptmntItem(scrapy.Item):
+class CarItem(scrapy.Item):
     url = scrapy.Field()
     make = scrapy.Field()
     model = scrapy.Field()

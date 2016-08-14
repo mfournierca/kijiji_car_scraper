@@ -123,7 +123,6 @@ class OttawaHondaCarSpider(BaseCarSpider):
         l = m.group(2)
         return self._clean_string(l) if l else None
 
-
     def _extract_year(self, response):
         title = self._extract_title(response)
         m = re.search('^\s*(\d+).*', title)

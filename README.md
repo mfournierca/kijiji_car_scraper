@@ -1,5 +1,3 @@
 ## Kijiji Scraper
 
-A scrapy program for retrieving rents and house prices from kijiji. 
-
-Released under the MIT License.
+Get used car information and analyze it.

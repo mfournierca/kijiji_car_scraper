@@ -114,7 +114,15 @@ class OttawaHondaCarSpider(BaseCarSpider):
         car["price"] = self._extract_field(response, "Price")
         car["kilometers"] = self._extract_kilometers(response)
         car["year"] = self._extract_year(response)
+        car["make"] = self._extract_make(response)
         return car
+
+    def _extract_make(self, response):
+        title = self._extract_title(response)
+        m = re.search('^\s*(\d+)\s*(\w+).*', title)
+        l = m.group(2)
+        return self._clean_string(l) if l else None
+
 
     def _extract_year(self, response):
         title = self._extract_title(response)

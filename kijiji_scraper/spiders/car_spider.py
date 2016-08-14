@@ -93,7 +93,7 @@ class OttawaHondaCarSpider(BaseCarSpider):
         Rule(
             LinkExtractor(
                 allow=[
-                    "https://www.ottawahonda.com/used/.+"
+                    "https://www.ottawahonda.com/used/.+id\d+"
                 ]
             ),
             callback='parse_item'
@@ -105,25 +105,32 @@ class OttawaHondaCarSpider(BaseCarSpider):
         )
     ]
 
-    def parse_item(self, respons):
+    def parse_item(self, response):
         car = items.CarItem()
         car["url"] = response.url
         car["domain"] = self._extract_domain(response)
         car["model"] = self._extract_field(response, "Model")
-        car["title"] = self._extrat_title(response)
+        car["title"] = self._extract_title(response)
         car["price"] = self._extract_field(response, "Price")
-        car["kilometers"] = self._extract_kilomters(response)
+        car["kilometers"] = self._extract_kilometers(response)
+        car["year"] = self._extract_year(response)
+        return car
 
-    def _extract_kilomters(self, response):
-        l = response.xpath("//div[@id='carPrice']/span[2]/text()")
-        l = self._clean_string(l).replace("(", "").replace(")", "").replace("km", "") if l else None
+    def _extract_year(self, response):
+        title = self._extract_title(response)
+        m = re.search('^\s*(\d+).*', title)
+        l = m.group(1)
+        return self._clean_string(l) if l else None
+
+    def _extract_kilometers(self, response):
+        l = response.xpath("//div[@id='carPrice']/span[2]/text()").extract()
+        l = self._clean_string(l[0]).replace("(", "").replace(")", "").replace("km", "") if l else None
         return l
 
     def _extract_title(self, response):
-        l = response.xpath("//h1[@id='carTitle']/text()")
-        return self._clean_string(l) if l else None
+        l = response.xpath("//h1[@id='carTitle']/text()").extract()
+        return self._clean_string(l[0]) if l else None
 
     def _extract_field(self, response, fieldname):
-        l = response.xpath("//li/span[contains(text(), '{0}: ')]//text()")
-            .format(fieldname)).extract()
-        return self._clean_string(l).replace(fieldname, "") if l else None
+        l = response.xpath("//li/span[contains(text(), '{0}: ')]/./text()".format(fieldname)).extract()
+        return self._clean_string(l[0]).replace(fieldname, "") if l else None

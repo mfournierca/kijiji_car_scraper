@@ -38,8 +38,8 @@ class KijijiCarSpider(CrawlSpider):
         car["date_listed"] = self._extract_field(response, "Date Listed")
         car["title"] = self._extract_title(response)
         car["description"] = self._extract_description(response)
-        car["make"] = self._extract_field(response, "Make")
-        car["model"] = self._extract_field(response, "Model")
+        car["make"] = self._extract_link_field(response, "Make")
+        car["model"] = self._extract_link_field(response, "Model")
         car["year"] = self._extract_field(response, "Year")
         car["kilometers"] = self._extract_field(response, "Kilometers")
 
@@ -60,6 +60,11 @@ class KijijiCarSpider(CrawlSpider):
 
     def _extract_field(self, response, fieldname):
         l = response.xpath("//th[contains(text(), '{0}')]/following::td[1]//./text()".
+                format(fieldname)).extract()
+        return l[0].strip() if l else None
+
+    def _extract_link_field(self, response, fieldname):
+        l = response.xpath("//th[contains(text(), '{0}')]/following::td[1]/a/span/./text()".
                 format(fieldname)).extract()
         return l[0].strip() if l else None
 

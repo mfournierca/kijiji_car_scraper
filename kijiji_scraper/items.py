@@ -10,11 +10,10 @@ import scrapy
 
 class AptmntItem(scrapy.Item):
     url = scrapy.Field()
-    address = scrapy.Field()
+    make = scrapy.Field()
+    model = scrapy.Field()
     price = scrapy.Field()
-    date_listed = scrapy.Field() 
-    num_bedrooms = scrapy.Field()
-    num_bathrooms = scrapy.Field() 
+    date_listed = scrapy.Field()
     description = scrapy.Field()
     title = scrapy.Field()
-
+    year = scrapy.Field()

@@ -24,7 +24,7 @@ class KijijiCarSpider(CrawlSpider):
             callback='parse_item'),
         Rule(
             LinkExtractor(
-                allow=["http://www.kijiji.ca/b-cars-trucks/ottawa/.*?/page-[0-10]/.+"]
+                allow=["http://www.kijiji.ca/b-cars-trucks/ottawa/.*?/page-[0-9]/.+"]
             )
         )
     ]

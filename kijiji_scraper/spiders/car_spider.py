@@ -20,12 +20,12 @@ class BaseCarSpider(CrawlSpider):
             string = string.replace(i, "")
         return string.strip()
 
-    def _extract_text_from_id(self, response, identifier):
-        l = response.xpath("//*[id='{0}']//./text()".format(fieldname)).extract()
+    def _extract_text_from_id(self, response, element, identifier):
+        l = response.xpath("//{1}[@id='{0}']/.//text()".format(identifier, element)).extract()
         return self._clean_string(l[0]) if l else None
 
-    def _extract_text_from_itemprops(self, response, identifier):
-        l = response.xpath("//*[itemprops='{0}']//./text()".format(fieldname)).extract()
+    def _extract_text_from_itemprop(self, response, element, identifier):
+        l = response.xpath("//{1}[@itemprop='{0}']/.//text()".format(identifier, element)).extract()
         return self._clean_string(l[0]) if l else None
 
 
@@ -96,9 +96,11 @@ class KijijiCarSpider(BaseCarSpider):
 class TonyGrahamToyotaCarSpider(BaseCarSpider):
     name = "tonygrahamtoyota_car_spider"
     allowed_domains = [
-        "www.tonygrahamtoyota.com/"
+        "www.tonygrahamtoyota.com",
+        "tonygrahamtoyota.com"
     ]
     start_urls = [
+        "http://www.tonygrahamtoyota.com/all/",
         "http://www.tonygrahamtoyota.com/all/keywords/",
         "http://www.tonygrahamtoyota.com/all/s/year/o/desc/pg/1",
         "http://www.tonygrahamtoyota.com/all/s/year/o/desc/pg/2",
@@ -118,7 +120,7 @@ class TonyGrahamToyotaCarSpider(BaseCarSpider):
         Rule(
             LinkExtractor(
                 allow=[
-                    "http://www.tonygrahamtoyota.com/all/s/year/o/desc/pg/\d"
+                    "http://www.tonygrahamtoyota.com/all/s/year/o/desc/pg/[0-5]"
                 ]
             )
         )
@@ -128,12 +130,16 @@ class TonyGrahamToyotaCarSpider(BaseCarSpider):
         car = items.CarItem()
         car["url"] = response.url
         car["domain"] = self._extract_domain(response)
-        car["price"] = self._extract_text_from_id(response, "final-price")
-        car["year"] = self._extract_text_from_itemprops(response, "releaseDate")
-        car["make"] = self._extract_text_from_itemprops(response, "brand")
-        car["model"] = self._extract_text_from_itemprops(response, "model")
-        car["kilometers"] = self._extract_text_from_itemprops(response, "mileageFromOdometer").replace("km", "")
+        car["price"] = self._extract_text_from_id(response, "span", "final-price")
+        car["year"] = self._extract_text_from_itemprop(response, "span", "releaseDate")
+        car["make"] = self._extract_text_from_itemprop(response, "span", "brand")
+        car["model"] = self._extract_text_from_itemprop(response, "span", "model")
+        car["kilometers"] = self._extract_kilometers(response)
         return car
+
+    def _extract_kilometers(self, response):
+        l = self._extract_text_from_itemprop(response, "td", "mileageFromOdometer")
+        return l.replace("km", "") if l else None
 
 
 class OttawaHondaCarSpider(BaseCarSpider):

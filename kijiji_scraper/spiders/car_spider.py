@@ -100,13 +100,10 @@ class TonyGrahamToyotaCarSpider(BaseCarSpider):
         "tonygrahamtoyota.com"
     ]
     start_urls = [
-        "http://www.tonygrahamtoyota.com/all/",
+        "http://www.tonygrahamtoyota.com/all/"
         "http://www.tonygrahamtoyota.com/all/keywords/",
-        "http://www.tonygrahamtoyota.com/all/s/year/o/desc/pg/1",
-        "http://www.tonygrahamtoyota.com/all/s/year/o/desc/pg/2",
-        "http://www.tonygrahamtoyota.com/all/s/year/o/desc/pg/3",
-        "http://www.tonygrahamtoyota.com/all/s/year/o/desc/pg/4",
-        "http://www.tonygrahamtoyota.com/all/s/year/o/desc/pg/5",
+    ] + [
+        "http://www.tonygrahamtoyota.com/all/s/year/o/desc/pg/{0}".format(i) for i in range(10)
     ]
     rules = [
         Rule(
@@ -156,7 +153,7 @@ class JimTubmanCarSpider(BaseCarSpider):
         "http://www.tubmanchev.com/used/s/year/o/desc/pg/5"
     ]
     rules = [
-        Rules(
+        Rule(
             LinkExtractor(
                 allow=[
                     "http://www.tubmanchev.com/used/vehicle/.*"

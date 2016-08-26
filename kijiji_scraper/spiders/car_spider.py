@@ -142,6 +142,47 @@ class TonyGrahamToyotaCarSpider(BaseCarSpider):
         return l.replace("km", "") if l else None
 
 
+class JimTubmanCarSpider(BaseCarSpider):
+    name = "jimtubman_car_spider"
+    allowed_domains = [
+        "www.tubmanchev.com"
+    ]
+    start_urls = [
+        "http://www.tubmanchev.com/used/",
+        "http://www.tubmanchev.com/used/s/year/o/desc/pg/1",
+        "http://www.tubmanchev.com/used/s/year/o/desc/pg/2",
+        "http://www.tubmanchev.com/used/s/year/o/desc/pg/3",
+        "http://www.tubmanchev.com/used/s/year/o/desc/pg/4",
+        "http://www.tubmanchev.com/used/s/year/o/desc/pg/5"
+    ]
+    rules = [
+        Rules(
+            LinkExtractor(
+                allow=[
+                    "http://www.tubmanchev.com/used/vehicle/.*"
+                ]
+            ),
+            callback="parse_item"
+        )
+    ]
+
+    def parse_item(self, response):
+        car = items.CarItem()
+        car["url"] = response.url
+        car["domain"] = self._extract_domain(response)
+        car["model"] = self._extract_text_from_itemprop(response, "span", "model")
+        car["title"] = self._extract_title(response)
+        car["price"] = self._extract_text_from_itemprop(response, "span", "price")
+        car["kilometers"] = self._extract_text_from_itemprop(response, "span", "mileageFromOdometer")
+        car["year"] = self._extract_text_from_itemprop(response, "span", "releaseDate")
+        car["make"] = self._extract_text_from_itemprop(response, "span", "manufacturer")
+        return car
+
+    def _extract_title(self, response):
+        l = response.xpath(".//*[@id='details-content']/div/div/h1/text()").extract()
+        return self._clean_string(l[0]) if l else None
+
+
 class OttawaHondaCarSpider(BaseCarSpider):
     name = "ottawahonda_car_spider"
     allowed_domains = [

@@ -1,7 +1,8 @@
-__init__.pyc
+__init__.pyc 
 aptmnt_spider.pyc
 output/
 .DS_Store
 *.pyc
 */*.pyc
 *.swp
+data/

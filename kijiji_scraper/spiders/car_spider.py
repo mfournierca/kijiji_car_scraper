@@ -132,6 +132,7 @@ class TonyGrahamToyotaCarSpider(BaseCarSpider):
         car["make"] = self._extract_text_from_itemprop(response, "span", "brand")
         car["model"] = self._extract_text_from_itemprop(response, "span", "model")
         car["kilometers"] = self._extract_kilometers(response)
+        car["description"] = self.self._extract_text_from_id(response, "div", "collapseVehicleDetails")
         return car
 
     def _extract_kilometers(self, response):
@@ -168,16 +169,13 @@ class JimTubmanCarSpider(BaseCarSpider):
         car["url"] = response.url
         car["domain"] = self._extract_domain(response)
         car["model"] = self._extract_text_from_itemprop(response, "span", "model")
-        car["title"] = self._extract_title(response)
+        car["title"] = self._extract_text_from_itemprop(response, "h1", "name")
         car["price"] = self._extract_text_from_itemprop(response, "span", "price")
         car["kilometers"] = self._extract_text_from_itemprop(response, "span", "mileageFromOdometer")
         car["year"] = self._extract_text_from_itemprop(response, "span", "releaseDate")
         car["make"] = self._extract_text_from_itemprop(response, "span", "manufacturer")
+        car["description"] = self._extract_text_from_itemprop(response, "span", "description")
         return car
-
-    def _extract_title(self, response):
-        l = response.xpath(".//*[@id='details-content']/div/div/h1/text()").extract()
-        return self._clean_string(l[0]) if l else None
 
 
 class OttawaHondaCarSpider(BaseCarSpider):

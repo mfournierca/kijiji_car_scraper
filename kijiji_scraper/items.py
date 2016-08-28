@@ -19,3 +19,4 @@ class CarItem(scrapy.Item):
     title = scrapy.Field()
     year = scrapy.Field()
     kilometers = scrapy.Field()
+    used = scrapy.Field()

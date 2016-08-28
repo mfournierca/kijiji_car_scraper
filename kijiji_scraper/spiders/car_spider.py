@@ -147,12 +147,15 @@ class JimTubmanCarSpider(BaseCarSpider):
     ]
     start_urls = [
         "http://www.tubmanchev.com/used/",
-        "http://www.tubmanchev.com/used/s/year/o/desc/pg/1",
-        "http://www.tubmanchev.com/used/s/year/o/desc/pg/2",
-        "http://www.tubmanchev.com/used/s/year/o/desc/pg/3",
-        "http://www.tubmanchev.com/used/s/year/o/desc/pg/4",
-        "http://www.tubmanchev.com/used/s/year/o/desc/pg/5"
+        "http://www.tubmanchev.com/new/"
+    ] + [
+        "http://www.tubmanchev.com/used/s/year/o/desc/pg/{0}".format(i)
+        for i in range(10)
+    ] + [
+        "http://www.tubmanchev.com/used/s/year/o/desc/pg/{0}".format(i)
+        for i in range(10)
     ]
+
     rules = [
         Rule(
             LinkExtractor(

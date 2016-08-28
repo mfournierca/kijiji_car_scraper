@@ -20,3 +20,14 @@ class CarItem(scrapy.Item):
     year = scrapy.Field()
     kilometers = scrapy.Field()
     used = scrapy.Field()
+
+
+class FuelRatingItem(scrapy.Item):
+    url = scrapy.Field()
+    domain = scrapy.Field()
+    make = scrapy.Field()
+    model = scrapy.Field()
+    year = scrapy.Field()
+    lphkm_city = scrapy.Field() # Litres Per Hecta-Kilometer, L / 100km
+    lphkm_hwy = scrapy.Field()
+    estimated_fuel_cost_year = scrapy.Field()

@@ -8,28 +8,10 @@ from .. import items
 from scrapy.contrib.spiders import CrawlSpider, Rule
 from scrapy.contrib.linkextractors import LinkExtractor
 
-
-class BaseCarSpider(CrawlSpider):
-    name = "base_car_spider"
-
-    def _extract_domain(self, response):
-        return urlparse(response.url).netloc
-
-    def _clean_string(self, string):
-        for i in [",", "\n", "\r", ";", ":", "\\"]:
-            string = string.replace(i, "")
-        return string.strip()
-
-    def _extract_text_from_id(self, response, element, identifier):
-        l = response.xpath("//{1}[@id='{0}']/.//text()".format(identifier, element)).extract()
-        return self._clean_string(l[0]) if l else None
-
-    def _extract_text_from_itemprop(self, response, element, identifier):
-        l = response.xpath("//{1}[@itemprop='{0}']/.//text()".format(identifier, element)).extract()
-        return self._clean_string(l[0]) if l else None
+from BaseSpider import BaseSpider
 
 
-class KijijiCarSpider(BaseCarSpider):
+class KijijiCarSpider(BaseSpider):
     name = "kijiji_car_spider"
     allowed_domains = [
         "kijiji.ca"

@@ -75,7 +75,7 @@ class KijijiCarSpider(BaseSpider):
         return r.group(1).strip() if r else None
 
 
-class TonyGrahamToyotaCarSpider(BaseCarSpider):
+class TonyGrahamToyotaCarSpider(BaseSpider):
     name = "tonygrahamtoyota_car_spider"
     allowed_domains = [
         "www.tonygrahamtoyota.com",
@@ -122,7 +122,7 @@ class TonyGrahamToyotaCarSpider(BaseCarSpider):
         return l.replace("km", "") if l else None
 
 
-class JimTubmanCarSpider(BaseCarSpider):
+class JimTubmanCarSpider(BaseSpider):
     name = "jimtubman_car_spider"
     allowed_domains = [
         "www.tubmanchev.com"
@@ -163,7 +163,7 @@ class JimTubmanCarSpider(BaseCarSpider):
         return car
 
 
-class OttawaHondaCarSpider(BaseCarSpider):
+class OttawaHondaCarSpider(BaseSpider):
     name = "ottawahonda_car_spider"
     allowed_domains = [
         "ottawahonda.com"

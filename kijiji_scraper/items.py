@@ -23,6 +23,7 @@ class CarItem(scrapy.Item):
 
 
 class FuelRatingItem(scrapy.Item):
+    title = scrapy.Field()
     url = scrapy.Field()
     domain = scrapy.Field()
     make = scrapy.Field()
@@ -31,3 +32,11 @@ class FuelRatingItem(scrapy.Item):
     lphkm_city = scrapy.Field() # Litres Per Hecta-Kilometer, L / 100km
     lphkm_hwy = scrapy.Field()
     estimated_fuel_cost_year = scrapy.Field()
+    model_class = scrapy.Field()
+    engine_size_litres = scrapy.Field()
+    cylinders = scrapy.Field()
+    transmission = scrapy.Field()
+    fuel = scrapy.Field()
+    ranking_class = scrapy.Field()
+    ranking_overall = scrapy.Field()
+

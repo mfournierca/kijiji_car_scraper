@@ -28,5 +28,5 @@ class BaseSpider(CrawlSpider):
         return self._clean_string(l[0]) if l else None
 
     def _extract_text_from_class(self, response, element, identifier):
-        l = response.xpath("//{1}[contains(@class, '{0}')]".format(identifier, element)).extract()
+        l = response.xpath("//{1}[contains(@class, '{0}')]/.//text()".format(identifier, element)).extract()
         return l

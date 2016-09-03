@@ -14,7 +14,7 @@ class NrcanFuelRatingsSpider(BaseSpider):
         "oee.nrcan.gc.ca"
     ]
     start_urls = [
-        "http://oee.nrcan.gc.ca/fcr-rcf/public/index-e.cfm?submitted=true&sort=overall_rank&searchbox=&year=2016&class=all&make=all&model=all&trans=all&FT=all&cylinders=all&unit=0&kmPerYear=&cityRating=&fuelGas=&fuelPremium=&fuelDiesel=&onSearchLink=%231&pageSize=100&btnSearch=Search#aSearch"
+        "http://oee.nrcan.gc.ca/fcr-rcf/public/index-e.cfm?submitted=true&sort=overall_rank&searchbox=&year=all&class=all&make=all&model=all&trans=all&FT=all&cylinders=all&unit=0&kmPerYear=&cityRating=&fuelGas=&fuelPremium=&fuelDiesel=&onSearchLink=%231&pageSize=100&btnSearch=Search#aSearch"
     ]
     rules = [
         Rule(
@@ -28,7 +28,7 @@ class NrcanFuelRatingsSpider(BaseSpider):
         Rule(
 
             LinkExtractor(
-                allow=["http://oee.nrcan.gc.ca/fcr-rcf/public/index-e.cfm.*start=[0-9][0-9]*.*"]
+                allow=["http://oee.nrcan.gc.ca/fcr-rcf/public/index-e.cfm.*start=([0-9]|[1-9][0-9]|[1-9][0-9][0-9]|[1-9][0-9][0-9][0-9]).*"]
             )
         )
     ]

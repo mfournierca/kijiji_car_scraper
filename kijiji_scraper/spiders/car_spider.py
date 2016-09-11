@@ -75,6 +75,54 @@ class KijijiCarSpider(BaseSpider):
         return r.group(1).strip() if r else None
 
 
+class CarOnAutoCarSpider(BaseSpider):
+    name = "caronauto_car_spider"
+    allowed_domains = [
+        "caronauto.ca"
+    ]
+    start_urls = [
+        "http://www.caronauto.ca/used-inventory/index.htm"
+    ]
+    rules = [
+        Rule(
+            LinkExtractor(
+                allow=[
+                    "http://www.caronauto.ca/certified/.*"
+                ]
+            ),
+            callback="parse_item"
+        ),
+        Rule(
+            LinkExtractor(
+                allow=[
+                    "http://www.caronauto.ca/used-inventory/index.htm.*"
+                ]
+            )
+        )
+    ]
+
+    def parse_item(self, response):
+        car = items.CarItem()
+
+        car["url"] = response.url
+        car["domain"] = self._extract_domain(response)
+
+        title = self._extract_text_from_class(response, "div", "content-page-title")
+        car["title"] = title
+
+        l = title.split(" ")
+        car["year"] = l[0]
+        car["make"] = l[1]
+        car["model"] = l[2]
+
+        km = response.xpath("//li[contains(@class, 'odometer')]/span/text()").extract()[0]
+        car["kilometers"] = km
+
+        car["price"] = self._extract_text_from_class(response, "strong", "price")
+        car["description"] = self.self._extract_text_from_class(response, "li", "comments")
+        return car
+
+
 class TonyGrahamToyotaCarSpider(BaseSpider):
     name = "tonygrahamtoyota_car_spider"
     allowed_domains = [

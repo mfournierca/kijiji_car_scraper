@@ -95,7 +95,7 @@ class CarOnAutoCarSpider(BaseSpider):
         Rule(
             LinkExtractor(
                 allow=[
-                    "http://www.caronauto.ca/used-inventory/index.htm.*"
+                    "http://www.caronauto.ca/used-inventory/index.htm?start=.*"
                 ]
             )
         )

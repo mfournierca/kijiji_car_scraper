@@ -107,10 +107,10 @@ class CarOnAutoCarSpider(BaseSpider):
         car["url"] = response.url
         car["domain"] = self._extract_domain(response)
 
-        title = self._extract_text_from_class(response, "div", "content-page-title")
+        title = response.xpath("//div[contains(@class, 'content-page-title')]/div[contains(@class, 'bd')]/h1/text()").extract()[0]
         car["title"] = title
 
-        l = title.split(" ")
+        l = title.strip().split(" ")
         car["year"] = l[0]
         car["make"] = l[1]
         car["model"] = l[2]
@@ -119,7 +119,7 @@ class CarOnAutoCarSpider(BaseSpider):
         car["kilometers"] = km
 
         car["price"] = self._extract_text_from_class(response, "strong", "price")
-        car["description"] = self.self._extract_text_from_class(response, "li", "comments")
+        car["description"] = self._extract_text_from_class(response, "li", "comments")
         return car
 
 

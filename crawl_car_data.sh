@@ -1,7 +1,9 @@
 #!/bin/sh
 
-scrapy crawl caronauto_car_spider -o data/caronauto_cars.csv -t csv
-scrapy crawl kijiji_car_spider -o data/kijiji_cars.csv -t csv
-scrapy crawl ottawahonda_car_spider -o data/ottawahonda_cars.csv -t csv
-scrapy crawl tonygrahamtoyota_car_spider -o data/tonygrahamtoyota_cars.csv -t csv
-scrapy crawl jimtubman_car_spider -o data/jimtubman_cars.csv -t csv
+for name in ("kijiji", "ottawahonda", "tonygrahamtoyota", "jimtubman", "caronauto")
+do
+    OUTPUT=data/${name}_cars.csv
+    SPIDER=${name}_car_spider
+    mv $OUTPUT ${OUTPUT}.bak
+    scrapy crawl $SPIDER -o $OUTPUT -t csv
+done

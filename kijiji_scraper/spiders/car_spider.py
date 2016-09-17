@@ -162,7 +162,7 @@ class TonyGrahamToyotaCarSpider(BaseSpider):
         car["make"] = self._extract_text_from_itemprop(response, "span", "brand")
         car["model"] = self._extract_text_from_itemprop(response, "span", "model")
         car["kilometers"] = self._extract_kilometers(response)
-        car["description"] = self.self._extract_text_from_id(response, "div", "collapseVehicleDetails")
+        car["description"] = self._extract_text_from_id(response, "div", "collapseVehicleDetails")
         return car
 
     def _extract_kilometers(self, response):

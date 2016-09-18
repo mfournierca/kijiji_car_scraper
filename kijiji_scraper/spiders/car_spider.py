@@ -123,6 +123,71 @@ class CarOnAutoCarSpider(BaseSpider):
         return car
 
 
+class BelAirToyotaCarSpider(BaseSpider):
+    name = "belairlexustoyota_car_spider"
+    allowed_domains = ["belairtoyotaottawa.com", "belairlexustoyota.com"]
+    start_urls = ["http://belairlexustoyota.com/cars/"]
+    rules = [
+        Rule(
+            LinkExtractor(
+                allow=["http://belairlexustoyota.com/cars/view/.*"],
+            ),
+            callback="parse_item"
+        ),
+        Rule(
+            LinkExtractor(
+                allow=["http://belairlexustoyota.com/cars/all/page/\d/"]
+        ))
+    ]
+
+    def parse_item(self, response):
+        car = items.CarItem()
+        car["url"] = response.url
+        car["domain"] = self._extract_domain(response)
+        car["price"] = self._extract_price(response)
+
+        title = self._extract_title(response)
+        title_list = title.split(" ")
+        car["title"] = title
+        car["year"] = title_list[0]
+        car["make"] = title_list[1]
+        car["model"] = " ".join(title_list[2:])
+
+        car["kilometers"] = self._extract_kilometers(response)
+        car["description"] = self._extract_text_from_class(response, "ul", "jalopy-option-list")
+
+        return car
+
+    def _extract_title(self, response):
+        l = response.xpath("//div[contains(@class, 'jp_specs')]/h1//text()").extract()
+        l = l[0].rstrip()
+        return l
+
+    def _extract_price(self, response):
+        p = response.xpath("//span[contains(@class, 'jp_price')]/span[contains(@class, 'jp_row_description')]//text()").extract()
+        p = " ".join(p)
+        try:
+            m = re.search("(\d.*\d)", p)
+            p = m.group(1)
+            p = p.replace(",", "")
+        except:
+            pass
+        p = p.rstrip()
+        return p
+
+    def _extract_kilometers(self, response):
+        l = response.xpath("//span[contains(@class, 'jp_km')]/span[contains(@class, 'jp_row_description')]//text()").extract()
+        l = " ".join(l)
+        try:
+            m = re.search("(\d.*\d)", l)
+            l = m.group(1)
+            l = l.replace(",", "")
+        except:
+            pass
+        l = l.rstrip()
+        return l
+
+
 class TonyGrahamToyotaCarSpider(BaseSpider):
     name = "tonygrahamtoyota_car_spider"
     allowed_domains = [

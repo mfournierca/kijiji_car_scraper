@@ -188,6 +188,48 @@ class BelAirToyotaCarSpider(BaseSpider):
         return l
 
 
+class AutoTraderCarSpider(BaseSpider):
+    name = "autotrader_car_spider"
+    allowed_domains = ["autotrader.ca"]
+    start_urls = [
+        "http://wwwa.autotrader.ca/cars/on/ottawa/?prx=100&prv=Ontario&loc=Ottawa%2c+ON&sts=New-Used&hprc=True&wcp=True&inMarket=basicSearch"
+    ]
+    rules = [
+        Rule(
+            LinkExtractor(
+                allow=["http://wwwa.autotrader.ca/a/.*"]
+            ),
+            callback="parse_item"
+        ),
+        Rule(
+            LinkExtractor(
+                allow=["http://wwwa.autotrader.ca/cars/on/ottawa/.*"]
+            )
+        )
+    ]
+
+    def parse_item(self, response):
+        car = items.CarItem()
+        car["url"] = response.url
+        car["domain"] = self._extract_domain(response)
+
+        title = self._extract_text_from_class(response, "h1", "adTitle")[0]
+        title_list = title.rstrip().split(" ")
+
+        car["year"] = title_list[0]
+        car["make"] = title_list[1]
+        car["model"] = " ".join(title_list[2:])
+
+        car["price"] = self._extract_text_from_class(response, "div", "currentPrice")[0].rstrip()
+        car["kilometers"] = self._extract_kilometers(response)
+        car["description"] = self._extract_text_from_class(response, "div", "vehicleDescription")
+        return car
+
+    def _extract_kilometers(self, response):
+        l = response.xpath("//div[span[contains(text(), 'Kilometres')]]/following::div[1]//text()").extract()
+        return " ".join(l).rstrip()
+
+
 class TonyGrahamToyotaCarSpider(BaseSpider):
     name = "tonygrahamtoyota_car_spider"
     allowed_domains = [

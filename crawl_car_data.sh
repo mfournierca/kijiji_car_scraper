@@ -1,6 +1,8 @@
 #!/bin/sh
 
-for name in ("kijiji", "ottawahonda", "tonygrahamtoyota", "jimtubman", "caronauto", "belairlexustoyota")
+NAMES=("kijiji" "ottawahonda" "tonygrahamtoyota" "jimtubman" "caronauto" "belairlexustoyota")
+
+for name in "${NAMES[@]}"
 do
     OUTPUT=data/${name}_cars.csv
     SPIDER=${name}_car_spider
